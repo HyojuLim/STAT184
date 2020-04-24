@@ -1,0 +1,118 @@
+---
+title: "Final Project Draft"
+author: "Hyoju Lim"
+date: "04/16/2020"
+output: html_notebook
+---
+
+# Research question
+Which county has the most severe adolescent obesity problem in Maryland? 
+
+# Data set
+The primary data set is called "Obesity" which represents the obesity level of adolescents in the state of Maryland. The secondary data set is called "Tobacco" which represents the tobacco usage of adolescents in the state of Maryland.
+
+There are total 5 variables in the Obesity data set: Jurisdiction, Value, Race/ethnicity, Year, and Measure. For the analysis, I am going to use 'Jurisdiction', 'Value', and 'Year'. To be specific, I will mainly use 'Value' which indicates the degree of obesity. Also, in order to compare the obesity among counties, I will use 'Jurisdiction' which contains the county information. Moreover, it would be useful to compare the degree of obesity for each year, so it would be helpful to use 'Year' variable.
+
+```{r}
+# load the dataset
+Obesity <- read.csv("C:\\Users\\shara\\Desktop\\STAT 184\\Final Project\\SHIP_Adolescents_Who_Have_Obesity_2010__2013-2014__2016.csv")
+head(Obesity)
+```
+
+```{r include=FALSE}
+# explore the data set
+library(tidyverse)
+library(mosaic)
+library(DataComputing)
+```
+
+```{r}
+glimpse(Obesity)
+```
+
+# Explore the data set
+
+Basically, the research question is to check the relationship between obesity level and each county, so before we move on to the analysis, it is needed to check how many counties are there in Jurisdiction column.
+
+```{r}
+# Counties in the data set
+levels(Obesity$Jurisdiction)
+```
+
+According to the result above, there are total 25 counties in the Jurisdiction column. Now, in order to see the relationship between the obesity value and the county, we can draw a plot like below.
+
+```{r}
+# Dot plot
+Obesity %>%
+  ggplot(aes(x=Jurisdiction, y=Value)) +
+  geom_point()+
+  theme(axis.text.x = element_text(angle = 30, hjust = 0.5))
+```
+
+```{r}
+# Box plot
+Obesity %>%
+  ggplot(aes(x=Jurisdiction, y = Value)) +
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 30, hjust = 0.5))
+```
+
+According to the dot plot above, the highest obesity value was found in Prince George's county in Maryland. However, it is an individual case, and this highest observation in Prince George's seems to be an outlier, so we also need to check box plot which tells us the Q1, median, and Q3 values and the outliers. According to the box plot, this highest obesity value in Prince George's is a severe outlier, and the median obesity in this county is not that high compared to other counties. Therefore, it would be difficult to say that Prince George's is the county which has the most serious adolescent obesity problem. Rather than saying Prince George's is the most severe county, it is more plausible to look at the median obesity value of each county to specify the most severe one. According to the box plot, Saint Mary's county seems to have the most serious adolescent obesity problem. This is because not only its median value is the highest among counties, but also Saint Mary's has the highest minimum value of obesity among all counties. Therefore, it would be more reasonable to say that we are worried that Saint Mary's is the county in Maryland that has the most intense adolescent obesity problem.  
+
+
+
+However, in order to answer the research question that "Which county has the most severe adolescent obesity problem in Maryland?", it is required to determine how severe is severe. 
+
+```{r}
+# avg & sd of obesity of each county
+Obesity %>%
+  group_by(Jurisdiction) %>%
+  summarise(n = n(),
+            mean = mean(Value, na.rm=TRUE),
+            sd = sd(Value, na.rm=TRUE))
+```
+
+```{r}
+# total mean
+Obesity %>%
+  summarise(total_mean = mean(Value, na.rm=TRUE),
+            total_sd = sd(Value, na.rm=TRUE))
+```
+
+Comparing total mean to the mean of each county's obesity level would help determine how severe the obesity level is in each jurisdiction(county).
+
+However, what I am worried here is that the research question is too simple and easy that it seems like no other further analysis or the modification of data set is needed. How can I enrich my analysis? Or would it be better to change research question? 
+
+
+
+# Secondary data set
+```{r}
+Tobacco <- read.csv("C:\\Users\\shara\\Desktop\\STAT 184\\Final Project\\SHIP_Adolescents_Who_Use_Tobacco_Products_2010__2013-2014__2016.csv")
+head(Tobacco)
+```
+
+```{r}
+glimpse(Tobacco)
+```
+
+
+```{r}
+# Jurisdiction
+levels(Tobacco$Jurisdiction)
+```
+
+```{r}
+# compare the Jurisdiction variable in Obesity and Tobacco
+levels(Obesity$Jurisdiction) == levels(Tobacco$Jurisdiction)
+```
+
+As Tobacco and Obesity have same Jurisdiction column, it would enrich the analysis if I also use Tobacco data to understand more about county in Maryland.
+
+```{r}
+Tobacco %>%
+  ggplot(aes(x=Jurisdiction, y = Value)) +
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 30, hjust = 0.5))
+```
+
+I decided to use this Tobacco data set as my secondary data set since I thought it might be helpful to answer the research question, "Which county has the most severe adolescent obesity problem in Maryland?". However, as it seems like this Tobacco data set has nothing to do with Obesity data set, I am not sure how to make use of this secondary data set.
